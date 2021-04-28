@@ -1,0 +1,218 @@
+  <!DOCTYPE html>
+  <html>
+    <head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+    <title>TODO LIST</title>
+      <!--Import bootstrap.css-->
+      <link type="text/css" rel="stylesheet" href="resources/css/bootstrap.min.css" />
+	  
+	  <!-- custom CSS -->
+ 
+		<style>
+        @font-face {
+            font-family: 'Roboto';
+            src: url('resources/fonts/roboto/Roboto-Regular.eot');
+            src: url('resources/fonts/roboto/Roboto-Regular.woff') format('woff'), 
+            url('resources/fonts/roboto/Roboto-Regular.ttf') format('truetype');
+            font-style: normal;
+            }
+            
+        body{font-family: "Roboto"}
+            
+		.width-30-pct{
+			width:30%;
+		}
+		 
+		.text-align-center{
+			text-align:center;
+		}
+		 
+		.margin-bottom-1em{
+			margin-bottom:1em;
+		}
+		</style>
+
+    </head>
+
+    <body>
+<div class="container" ng-app="tarefas" ng-controller="tarefasCTRL">
+    <div class="row">
+        <div class="">
+            <h3 align="center">TODO LIST</h3>
+			<a class="btn btn-primary " data-toggle="modal" data-target="#myModal" ng-click="showCreateForm()">Nova Tarefa</a>
+			<a class="btn btn-primary " ng-click="noTask()" ng-show="todoPendente.length == 0 " ng-hide="TextCatFact.length > 0">Estou sem Tarefa</a>
+			
+			<h4 class="text-align-center">Tarefas Pendentes</h4>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<!--<th class="text-align-center">ID</th>-->
+						<th class="">ID</th>
+						<th class="width-30-pct">Nome</th>
+						<th class="width-30-pct">Descrição</th>
+						<th class="text-align-center">Email</th>
+						<th class="text-align-center">Status</th>
+						<th class="text-align-center">Action</th>
+					</tr>
+				</thead>
+				<tbody ng-init="getAll()">
+					<tr ng-repeat="d in todoPendente | filter:search">
+						<td>{{ d.idtarefas }}</td>
+						<td>{{ d.nome }}</td>
+						<td>{{ d.descricao }}</td>
+						<td class="text-align-center">{{ d.email }}</td>
+						<td>{{ d.status == 0 ? 'Pendente' : 'Concluída' }}</td>
+						<td align="center">
+							<a ng-click="readOne(d.idtarefas)" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"> Editar</span></a>
+							<a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirm{{d.idtarefas}}"><span class="glyphicon glyphicon-remove" aria-hidden="true"> Deletar</span></a>
+							<!--Are you sure modal-->
+							<div class="modal" id="confirm{{d.idtarefas}}" tabindex="-1" role="dialog">
+							  <div class="modal-dialog">
+								<div class="modal-content">
+								  <div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title">Confirma</h4>
+								  </div>
+								  <div class="modal-body">
+									  <div><b style='color: red'>{{modalstatustext}}</b></div>
+									<p>Deseja excluir este registro?</p>
+									<div ng-show="loader.loading">Loading...</div>
+								  </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Não</button>
+									<button type="button" class="btn btn-danger" ng-click="deleteTarefa(d.idtarefas)" >Sim</button>
+								  </div>
+								</div><!-- /.modal-content -->
+							  </div><!-- /.modal-dialog -->
+							</div><!-- /.modal -->
+						</td>
+					</tr>
+
+					<tr ng-repeat="cat in TextCatFact">
+						<td>{{$index+1}}</td>
+						<td>eu</td>
+						<td>{{ cat.text }}</td>
+						<td>eu@me.com</td>
+						<td>Pendente</td>
+						<td><a class="btn btn-danger btn-sm" ng-click="deletaCatFact($index)"><span class="glyphicon glyphicon-remove" aria-hidden="true"> Deletar</span></a></td>
+					</tr>
+					
+				</tbody>
+			</table>
+
+			<h4 class="text-align-center">Tarefas Concluidas</h4>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<!--<th class="text-align-center">ID</th>-->
+						<th class="">ID</th>
+						<th class="width-30-pct">Nome</th>
+						<th class="width-30-pct">Descrição</th>
+						<th class="text-align-center">Email</th>
+						<th class="text-align-center">Status</th>
+						<th class="text-align-center">Action</th>
+					</tr>
+				</thead>
+				<tbody ng-init="getAll()">
+					<tr ng-repeat="d in todoConcluido | filter:search">
+						<td>{{ d.idtarefas }}</td>
+						<td>{{ d.nome }}</td>
+						<td>{{ d.descricao }}</td>
+						<td class="text-align-center">{{ d.email }}</td>
+						<td>{{ d.status == 0 ? 'Pendente' : 'Concluída' }}</td>
+						<td align="center">
+							<a ng-click="readOne(d.idtarefas)" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-edit" aria-hidden="true"> Editar</span></a>
+							<a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirm{{d.idtarefas}}"><span class="glyphicon glyphicon-remove" aria-hidden="true"> Deletar</span></a>
+							<!--Are you sure modal-->
+							<div class="modal" id="confirm{{d.idtarefas}}" tabindex="-1" role="dialog">
+							  <div class="modal-dialog">
+								<div class="modal-content">
+								  <div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title">Confirma</h4>
+								  </div>
+								  <div class="modal-body">
+									  <div><b style='color: red'>{{modalstatustext}}</b></div>
+									<p>Deseja excluir este registro?</p>
+									<div ng-show="loader.loading">Loading...</div>
+								  </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Não</button>
+									<button type="button" class="btn btn-danger" ng-click="deleteTarefa(d.idtarefas)" >Sim</button>
+								  </div>
+								</div><!-- /.modal-content -->
+							  </div><!-- /.modal-dialog -->
+							</div><!-- /.modal -->
+						</td>
+						
+					</tr>
+					
+				</tbody>
+			</table>
+
+			<div ng-show="todoPendente.length == 0 && todoConcluido.length == 0 ">{{statustext}}</div>
+            <div ng-show="loader.loading">Loading...</div>
+        </div>
+    </div> <!-- end row -->
+
+	<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-product-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        <div ng-show="loader.loading">Loading...</div>
+          <div><b style='color: red'>{{modalstatustext}}</b></div>
+		<form id="form-dinminder">
+			<div class="form-group">
+				<label for="nome" class="control-label">Nome</label>
+				<input ng-model="nome" type="text" class="form-control" id="form-nome" placeholder="Informe o nome" ng-readonly="idtarefas != '' && status == 1">
+				
+			</div>
+			<div class="form-group">
+				<label for="descricao" class="control-label">Descrição</label>
+				<input ng-model="descricao" type="text" class="form-control" placeholder="Informe a descrição" ng-readonly="idtarefas != '' && status == 1">
+				
+			</div>
+			<div class="form-group">
+				<label for="email" class="control-label">Email</label>
+				<input ng-model="email" ng-blur="emailValid()" type="text" class="form-control" id="form-email" placeholder="informe o email" ng-readonly="idtarefas != '' && status == 1"/>	
+			</div>
+			<div class="form-group" ng-hide="status != 1">
+				<label for="senha" class="control-label">Senha Supervisor</label>
+				<input ng-model="senha" type="text" class="form-control" id="form-senha" placeholder="informe a senha" />					
+			</div>
+		</form>
+		
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+        <button id="btn-create-product" type="button" class="btn btn-primary" ng-click="createTarefa()">Criar</button>
+		<button id="btn-update-product" type="button" class="btn btn-warning" ng-click="updateTarefa()">Salvar Alterações</button>
+		<button id="btn-update-product" type="button" ng-if="idtarefas != ''" ng-class="status == 1 ? 'btn-primary' : 'btn-success'" class="btn" ng-click="moveTarefa()">{{status == 1 ? 'Tornar Pendente': 'Concluir Tarefa'}}</button>
+	  </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</div> <!-- end container -->
+
+      <!--Import jQuery before bootstrap.js-->
+      <script type="text/javascript" src="resources/js/jquery-2.2.1.min.js"></script>
+      <script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
+	  
+	  <!-- include angular js -->
+	  <script src="resources/js/angular.min.js"></script>
+	  
+	  <!-- controller app -->
+	  <script src="resources/js/app.js"></script>
+
+    </body>
+  </html>

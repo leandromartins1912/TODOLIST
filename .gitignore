@@ -1,0 +1,25 @@
+# Default nodeJS gitignore
+# Source: https://github.com/github/gitignore/blob/master/Node.gitignore
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+log
+results
+
+npm-debug.log
+node_modules
+
+# Extra ignores
+components
+.DS_Store
+Thumbs.db
+
+# dependencies
+/node_modules
